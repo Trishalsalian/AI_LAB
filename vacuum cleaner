@@ -1,0 +1,24 @@
+def vacuum_cleaner():
+    rooms = {'A': input("Is room A dirty? (yes/no): ").strip().lower(),
+             'B': input("Is room B dirty? (yes/no): ").strip().lower()}
+
+    location = 'A'
+
+    while True:
+        print(f"\nAgent is in room {location}.")
+        if rooms[location] == 'yes':
+            print(f"Room {location} is dirty. Cleaning...")
+            rooms[location] = 'no'
+        else:
+            print(f"Room {location} is clean.")
+
+
+        if rooms['A'] == 'no' and rooms['B'] == 'no':
+            print("Both rooms are clean. Task completed.")
+            break
+
+        location = 'B' if location == 'A' else 'A'
+        print(f"Moving to room {location}.")
+
+if __name__ == "__main__":
+    vacuum_cleaner()
