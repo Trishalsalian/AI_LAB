@@ -1,0 +1,63 @@
+def get_neighbors(state):
+    neighbors = []
+    idx = state.index(0)
+    moves = []
+
+    if idx % 3 != 0:
+        moves.append(idx - 1)
+    if idx % 3 != 2:
+        moves.append(idx + 1)
+    if idx > 2:
+        moves.append(idx - 3)
+    if idx < 6:
+        moves.append(idx + 3)
+
+    for move in moves:
+        new_state = state[:]
+        new_state[idx], new_state[move] = new_state[move], new_state[idx]
+        neighbors.append(new_state)
+
+    return neighbors
+
+def dfs_limited(start, goal, depth_limit, path, visited):
+    if start == goal:
+        return path + [start]
+
+    if len(path) > depth_limit:
+        return None
+
+    visited.add(tuple(start))
+
+    for neighbor in get_neighbors(start):
+        if tuple(neighbor) not in visited:
+            result = dfs_limited(neighbor, goal, depth_limit, path + [start], visited)
+            if result:
+                return result
+
+    return None
+
+def iddfs(start, goal, max_depth=50):
+    for depth in range(max_depth):
+        visited = set()
+        result = dfs_limited(start, goal, depth, [], visited)
+        if result:
+            return result
+    return None
+
+def print_state(state):
+    for i in range(0, 9, 3):
+        print(state[i:i+3])
+    print()
+
+# Main IDDFS example
+start = list(map(int, input("Enter start state (9 numbers, 0 for blank): ").split()))
+goal = list(map(int, input("Enter goal state (9 numbers, 0 for blank): ").split()))
+
+solution = iddfs(start, goal)
+
+if solution:
+    print(f"Solution found in {len(solution)-1} moves:")
+    for state in solution:
+        print_state(state)
+else:
+    print("No solution found within depth limit.")
