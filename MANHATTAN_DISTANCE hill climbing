@@ -1,0 +1,69 @@
+def manhattan(state, goal):
+    distance = 0
+    for num in range(1, 9):
+        i_state = state.index(num)
+        i_goal = goal.index(num)
+        x_state, y_state = i_state // 3, i_state % 3
+        x_goal, y_goal = i_goal // 3, i_goal % 3
+        distance += abs(x_state - x_goal) + abs(y_state - y_goal)
+    return distance
+
+def get_neighbors(state):
+    neighbors = []
+    idx = state.index(0)
+    moves = []
+
+    if idx % 3 != 0:  # left
+        moves.append(idx - 1)
+    if idx % 3 != 2:  # right
+        moves.append(idx + 1)
+    if idx > 2:       # up
+        moves.append(idx - 3)
+    if idx < 6:       # down
+        moves.append(idx + 3)
+
+    for move in moves:
+        new_state = state[:]
+        new_state[idx], new_state[move] = new_state[move], new_state[idx]
+        neighbors.append(new_state)
+
+    return neighbors
+
+def hill_climbing(start, goal):
+    current = start
+    while True:
+        current_h = manhattan(current, goal)
+        neighbors = get_neighbors(current)
+        next_state = current
+        next_h = current_h
+
+        for n in neighbors:
+            h = manhattan(n, goal)
+            if h < next_h:
+                next_h = h
+                next_state = n
+
+        print("Current state with Manhattan distance =", current_h)
+        for i in range(0,9,3):
+            print(current[i:i+3])
+        print()
+
+        if next_state == current:  # no improvement
+            print("Stuck at local optimum or goal reached.")
+            break
+
+        current = next_state
+        if current == goal:
+            print("Goal reached!")
+            for i in range(0,9,3):
+                print(current[i:i+3])
+            break
+
+# Input and run
+start = list(map(int, input("Enter start state (9 numbers, 0 for blank): ").split()))
+goal = list(map(int, input("Enter goal state (9 numbers, 0 for blank): ").split()))
+
+hill_climbing(start, goal)
+
+
+
