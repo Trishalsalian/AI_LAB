@@ -1,0 +1,68 @@
+from heapq import heappush, heappop
+
+goal = [[1, 2, 3],
+        [8, 0, 4],
+        [7, 6, 5]]
+
+def manhattan(state):
+    distance = 0
+    for i in range(3):
+        for j in range(3):
+            val = state[i][j]
+            if val != 0:
+
+                for x in range(3):
+                    for y in range(3):
+                        if goal[x][y] == val:
+                            distance += abs(i - x) + abs(j - y)
+    return distance
+
+def find_blank(state):
+    for i in range(3):
+        for j in range(3):
+            if state[i][j] == 0:
+                return i, j
+
+def get_neighbors(state):
+    neighbors = []
+    x, y = find_blank(state)
+    moves = [(1,0), (-1,0), (0,1), (0,-1)]
+    for dx, dy in moves:
+        nx, ny = x+dx, y+dy
+        if 0 <= nx < 3 and 0 <= ny < 3:
+            new_state = [row[:] for row in state]
+            new_state[x][y], new_state[nx][ny] = new_state[nx][ny], new_state[x][y]
+            neighbors.append(new_state)
+    return neighbors
+
+def to_tuple(state):
+    return tuple(tuple(row) for row in state)
+
+def a_star(start):
+    open_list = []
+    heappush(open_list, (manhattan(start), 0, start, []))
+    visited = set()
+
+    while open_list:
+        f, g, state, path = heappop(open_list)
+        if state == goal:
+            return path
+        visited.add(to_tuple(state))
+
+        for neighbor in get_neighbors(state):
+            if to_tuple(neighbor) not in visited:
+                heappush(open_list, (g+1+manhattan(neighbor), g+1, neighbor, path+[neighbor]))
+
+print("Manhattan distance\n");
+print("Enter puzzle row by row, use 0 for blank:")
+start = []
+for i in range(3):
+    row = list(map(int, input(f"Row {i+1}: ").split()))
+    start.append(row)
+
+solution = a_star(start)
+print("\nSolution found in", len(solution), "steps.")
+for step, s in enumerate(solution, 1):
+    print(f"\nStep {step}:")
+    for row in s:
+        print(row)
